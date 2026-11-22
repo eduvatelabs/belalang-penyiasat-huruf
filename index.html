@@ -19,6 +19,7 @@
 <meta name="twitter:image" content="https://eduvatelabs.github.io/belalang-penyiasat-huruf/og-image.jpg">
 <link rel="icon" href="a/img/logo.webp">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Baloo+2:wght@500;700;800&family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,800;1,9..144,600&family=Montserrat:ital,wght@0,500;0,600;0,700;0,800;1,500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Baloo+2:wght@500;700;800&family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,800;1,9..144,600&family=Montserrat:ital,wght@0,500;0,600;0,700;0,800;1,500&display=swap">
 <style>
 :root{--ink:#2E2A26;--cream:#FBF3E4;--paper:#f3e6cc;--wood:#8C5A3C;--wood-d:#5E3A24;--leaf:#3E6B48;--leaf-d:#24432C;--paddy:#F2C14E;--red:#A8432F;--red-d:#6E2A1C;--gold:#d9b25c}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -114,9 +115,12 @@ img.flipx{transform:scaleX(-1)}
 #load{position:absolute;left:50%;bottom:44px;transform:translateX(-50%);width:200px;height:5px;border-radius:9px;background:rgba(240,220,174,.25);overflow:hidden}
 #load i{display:block;height:100%;width:0;background:#f0cf7a;transition:width .3s}
 /* lagu */
-.title-card{position:absolute;left:50%;top:40px;transform:translateX(-50%);text-align:center;z-index:8;width:max-content;white-space:nowrap;pointer-events:none}
-.title-card .k{font-family:Fraunces,serif;font-style:italic;font-size:18px;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.5)}
-.title-card h1{margin:4px 0 0;font-family:Fraunces,serif;font-weight:800;font-size:52px;line-height:.95;color:#f6d47e;text-shadow:0 3px 0 #6d2418,0 6px 14px rgba(0,0,0,.45)}
+.title-card{position:absolute;left:50%;top:34px;transform:translateX(-50%);text-align:center;z-index:8;width:max-content;white-space:nowrap;pointer-events:none}
+.title-card{background:linear-gradient(180deg,#7a4b2c,#5E3A24);border:4px solid #3e2414;outline:3px solid #d9b25c;outline-offset:-10px;border-radius:18px;padding:14px 40px 18px;box-shadow:0 10px 0 rgba(46,26,12,.45),0 16px 30px rgba(0,0,0,.35)}
+.title-card:before,.title-card:after{content:'';position:absolute;top:-34px;width:6px;height:34px;background:#3e2414;border-radius:3px}
+.title-card:before{left:60px}.title-card:after{right:60px}
+.title-card .k{font-family:Fraunces,serif;font-style:italic;font-size:17px;color:#f3e6cc}
+.title-card h1{margin:4px 0 0;font-family:Fraunces,serif;font-weight:800;font-size:46px;line-height:.98;color:#ffd970;text-shadow:0 3px 0 #2e1a0c}
 .tiles{position:absolute;inset:0;z-index:5;pointer-events:none}
 .tile{position:absolute;width:50px;height:54px;margin:-27px 0 0 -25px;border-radius:12px;background:var(--cream);border:3px solid var(--wood);box-shadow:0 4px 0 var(--wood-d),0 8px 16px rgba(60,35,15,.25);display:flex;align-items:center;justify-content:center;font:700 34px Andika,sans-serif;color:var(--red);opacity:0}
 .tile.float{opacity:1;animation:tfloat var(--d,3s) ease-in-out var(--dl,0s) infinite}
@@ -448,7 +452,7 @@ async function goto(i,opt={}){cancelAll();const my=run;stopMusic(.8);
 const next=my=>{if(alive(my))goto(chapter+1);};
 
 /* ---- Lagu ---- */
-function letterSpots(){const ex=[[230,24,800,200],[130,290,350,640],[390,300,590,640],[320,540,940,640],[850,0,1024,84],[0,520,90,640]];
+function letterSpots(){const ex=[[260,0,770,215],[130,290,350,640],[390,300,590,640],[320,540,940,640],[850,0,1024,84],[0,520,90,640]];
   let seed=7;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;const pts=[];let guard=0;
   while(pts.length<26&&guard<20000){guard++;const x=50+rnd()*924,y=50+rnd()*520;
     if(ex.some(r=>x>r[0]-30&&x<r[2]+30&&y>r[1]-30&&y<r[3]+30))continue;if(pts.some(p=>Math.hypot(p[0]-x,p[1]-y)<(guard<8000?92:70)))continue;pts.push([x,y]);}
