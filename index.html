@@ -23,6 +23,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Baloo+2:wght@500;700;800&family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,800;1,9..144,600&family=Montserrat:ital,wght@0,500;0,600;0,700;0,800;1,500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Baloo+2:wght@500;700;800&family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,800;1,9..144,600&family=Montserrat:ital,wght@0,500;0,600;0,700;0,800;1,500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Baloo+2:wght@500;700;800&family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,800;1,9..144,600&family=Montserrat:ital,wght@0,500;0,600;0,700;0,800;1,500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Baloo+2:wght@500;700;800&family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,800;1,9..144,600&family=Montserrat:ital,wght@0,500;0,600;0,700;0,800;1,500&display=swap">
 <style>
 :root{--ink:#2E2A26;--cream:#FBF3E4;--paper:#f3e6cc;--wood:#8C5A3C;--wood-d:#5E3A24;--leaf:#3E6B48;--leaf-d:#24432C;--paddy:#F2C14E;--red:#A8432F;--red-d:#6E2A1C;--gold:#d9b25c}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -212,7 +213,7 @@ img.flipx{transform:scaleX(-1)}
 @keyframes arw{0%,20%{opacity:0}35%,70%{opacity:1}100%{opacity:0}}
 #rot h2{margin:0;font-family:Fraunces,serif;font-weight:800;font-size:30px;line-height:1.15;color:#ffd970}
 #rot p{margin:0;font-size:17px;line-height:1.4;max-width:320px;opacity:.9}
-#rot button{border:none;background:var(--leaf);color:#fff;font:800 20px 'Baloo 2',sans-serif;padding:12px 26px;border-radius:18px;box-shadow:0 5px 0 var(--leaf-d);cursor:pointer}
+#rot button{margin:2px 0;border:none;background:var(--leaf);color:#fff;font:800 20px 'Baloo 2',sans-serif;padding:12px 26px;border-radius:18px;box-shadow:0 5px 0 var(--leaf-d);cursor:pointer}
 .fsbtn{position:absolute;right:18px;top:16px;z-index:3;border:2px solid rgba(240,220,174,.6);background:rgba(46,29,18,.55);color:#f0dcae;font:700 15px 'Baloo 2',sans-serif;border-radius:999px;padding:8px 16px;cursor:pointer;display:none}
 </style>
 </head>
@@ -220,9 +221,9 @@ img.flipx{transform:scaleX(-1)}
 <div id="rot" role="dialog" aria-label="Pusingkan telefon">
   <div class="rscene"><img class="bel" src="a/img/belalang_menunjuk.webp" alt=""><div class="ph"></div><div class="ar">↻</div></div>
   <h2>Pusingkan telefon<br>untuk mula membaca</h2>
-  <p>Buku cerita ini paling seronok dibaca dalam keadaan melintang.</p>
-  <button id="rotFs" style="display:none">⛶ Main skrin penuh</button>
-  <p style="font-size:14px;opacity:.75">Skrin tak berpusing? Matikan <b>Kunci Putaran 🔒</b> di telefon.</p>
+  <p>Buku cerita ini dibaca dalam keadaan melintang. Pusingkan telefon ke kiri, buku akan tegak sendiri.</p>
+  <button id="rotOk">Faham, buka buku ›</button>
+  <button id="rotFs" style="display:none;background:#8C5A3C;box-shadow:0 5px 0 #5E3A24">⛶ Main skrin penuh</button>
 </div>
 <div id="fit"><div id="stage">
 
@@ -365,7 +366,12 @@ img.flipx{transform:scaleX(-1)}
 <script>
 const $=id=>document.getElementById(id);
 const stage=$('stage');
-function fit(){const s=Math.min(innerWidth/1024,innerHeight/640);stage.style.transform='scale('+s+')';}
+let ROT=false,SC=1;
+const isPhone=()=>matchMedia('(pointer:coarse)').matches&&Math.min(screen.width,screen.height)<600;
+function fit(){ROT=isPhone()&&innerHeight>innerWidth;SC=ROT?Math.min(innerHeight/1024,innerWidth/640):Math.min(innerWidth/1024,innerHeight/640);stage.style.transform=(ROT?'rotate(90deg) ':'')+'scale('+SC+')';}
+/* screen point -> stage coords (works when stage is rotated) */
+function toStage(cx,cy){const dx=cx-innerWidth/2,dy=cy-innerHeight/2;return ROT?[512+dy/SC,320-dx/SC]:[512+dx/SC,320+dy/SC];}
+function stageRect(el){let x=0,y=0,e=el;while(e&&e!==stage){x+=e.offsetLeft;y+=e.offsetTop;const p=e.offsetParent;if(p&&p!==stage){x+=p.clientLeft;y+=p.clientTop;}e=p;}return{left:x,top:y,width:el.offsetWidth,height:el.offsetHeight};}
 addEventListener('resize',fit);fit();
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const IMG=n=>'a/img/'+n+'.webp';
@@ -433,8 +439,8 @@ function hideSub(){$('sub').classList.remove('on');}
 function hideAll(){hideSub();hideBubble();}
 function showBubble(who,text,anchor,side){hideSub();const sp=$('speech');$('spName').textContent=who;$('spName').style.color=COL[who];
   $('spText').innerHTML=text.replace(/\((.*?)\)\s*/g,'<i>($1)</i> ');sp.classList.remove('on');sp.style.left='0px';sp.style.top='0px';
-  requestAnimationFrame(()=>{const k=stageScale(),sr=stage.getBoundingClientRect(),ar=anchor.getBoundingClientRect();
-    const cx=(ar.left+ar.width/2-sr.left)/k,top=(ar.top-sr.top)/k;const w=sp.offsetWidth,h=sp.offsetHeight;
+  requestAnimationFrame(()=>{const ar=stageRect(anchor);
+    const cx=ar.left+ar.width/2,top=ar.top;const w=sp.offsetWidth,h=sp.offsetHeight;
     let left=side==='right'?cx-40:side==='left'?cx-w+40:cx-w/2;left=Math.min(1024-w-16,Math.max(16,left));const y=Math.max(70,top-h-26);
     sp.style.left=left+'px';sp.style.top=y+'px';sp.style.setProperty('--tx',Math.min(w-26,Math.max(26,cx-left))+'px');sp.classList.add('on');});}
 /* say: shows text, plays clip, flaps mouth; resolves when clip ends */
@@ -603,7 +609,7 @@ function drawGuide(){const g=$('guide');let h='';
 function drawInk(){ctx.clearRect(0,0,860,860);ctx.lineCap='round';ctx.lineJoin='round';
   for(const s of T.ink.concat(T.cur?[T.cur]:[])){if(!s.pts.length)continue;ctx.strokeStyle=s.bad?'rgba(168,67,47,.55)':'#E8A317';ctx.lineWidth=6.2*K;ctx.beginPath();ctx.moveTo(s.pts[0][0]*K,s.pts[0][1]*K);
     if(s.pts.length===1)ctx.lineTo(s.pts[0][0]*K+.1,s.pts[0][1]*K);for(const p of s.pts)ctx.lineTo(p[0]*K,p[1]*K);ctx.stroke();}}
-function loc(e){const r=cv.getBoundingClientRect();return[(e.clientX-r.left)/r.width*100,(e.clientY-r.top)/r.height*100];}
+function loc(e){const r=stageRect(cv),p=toStage(e.clientX,e.clientY);return[(p[0]-r.left)/r.width*100,(p[1]-r.top)/r.height*100];}
 function near(p){let d=1e9;for(const q of T.all){const dd=Math.hypot(p[0]-q[0],p[1]-q[1]);if(dd<d)d=dd;}return d;}
 function addPt(p){if(near(p)<7.5)T.cur.in++;else T.cur.out++;
   let adv=true;while(adv&&T.k<T.cps.length){adv=false;const c=T.cps[T.k],h=T.hit[T.k];for(let i=0;i<c.length;i++)if(!h[i]&&Math.hypot(p[0]-c[i][0],p[1]-c[i][1])<6)h[i]=true;
@@ -651,7 +657,7 @@ async function complete(){if(T.done)return;T.done=true;clearTimeout(idleT);const
   S.stars[d.l]=Math.max(S.stars[d.l]||0,n);save();
   tone(660,.4,'sine',.12);tone(880,.4,'sine',.12,.12);tone(1320,.4,'sine',.12,.24);
   const pr=$('sProp');if(d.prop){pr.classList.remove('wobble');pr.classList.add('shake');}await sleep(450);
-  const o=$('sObj');const r=o.getBoundingClientRect(),sr=stage.getBoundingClientRect(),k=stageScale();sparkle((r.left-sr.left)/k+75,(r.top-sr.top)/k+40);
+  const o=$('sObj');const r=stageRect(o);sparkle(r.left+75,r.top+40);
   o.classList.add('out');if(d.alive)setTimeout(()=>o.classList.add('alive'),800);pop();
   $('sBelI').src=IMG('belalang_melompat');$('sBel').className='ch hop';$('hudS').innerHTML='★ '+totalStars();
   await say('Belalang','ep1_jumpa_'+d.l,d.line,{anchor:$('sBelI'),side:'right'});if(!alive(my))return;hideBubble();
@@ -811,16 +817,16 @@ $('cover').onclick=e=>{if(e.target.id==='cover'||e.target.classList.contains('hi
   let n=0;list.forEach(f=>{const im=new Image();im.onload=im.onerror=()=>{n++;$('loadBar').style.width=(n/list.length*100)+'%';if(n===list.length)setTimeout(()=>$('load').style.opacity=0,400);};im.src=IMG(f);});})();
 
 /* ================= ORIENTATION ================= */
-const isPhone=()=>matchMedia('(pointer:coarse)').matches&&Math.min(screen.width,screen.height)<600;
 const canFs=!!(document.documentElement.requestFullscreen||document.documentElement.webkitRequestFullscreen)&&!/iPhone|iPad|iPod/.test(navigator.userAgent);
 async function goFull(){try{const el=document.documentElement;await (el.requestFullscreen?el.requestFullscreen({navigationUI:'hide'}):el.webkitRequestFullscreen());}catch(e){}
-  try{await screen.orientation.lock('landscape');}catch(e){}setTimeout(()=>{fit();checkRot();},400);}
-let rotOn=false;
-function checkRot(){const show=isPhone()&&innerHeight>innerWidth;if(show===rotOn)return;rotOn=show;$('rot').classList.toggle('on',show);
-  try{if(AC){if(show)AC.suspend();else AC.resume();}}catch(e){}}
+  try{await screen.orientation.lock('landscape');}catch(e){}setTimeout(fit,400);}
+/* hint card: shown once when a phone opens the app upright; the book itself is drawn sideways so it works even where the browser can't rotate (e.g. Facebook) */
+let hintDone=false;
+function checkRot(){fit();const show=!hintDone&&ROT;$('rot').classList.toggle('on',show);if(!ROT&&isPhone())hintDone=true;}
 if(canFs&&matchMedia('(pointer:coarse)').matches){$('rotFs').style.display='inline-block';$('bFs').style.display='inline-block';}
-$('rotFs').onclick=()=>{unlock();goFull();};$('bFs').onclick=e=>{e.stopPropagation();goFull();};
-addEventListener('resize',checkRot);addEventListener('orientationchange',()=>setTimeout(()=>{fit();checkRot();},250));checkRot();
+$('rotFs').onclick=()=>{hintDone=true;unlock();goFull();checkRot();};$('rotOk').onclick=()=>{hintDone=true;checkRot();};
+$('bFs').onclick=e=>{e.stopPropagation();goFull();};
+addEventListener('resize',checkRot);addEventListener('orientationchange',()=>setTimeout(checkRot,250));checkRot();
 </script>
 </body>
 </html>
