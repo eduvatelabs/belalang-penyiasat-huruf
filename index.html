@@ -22,6 +22,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Baloo+2:wght@500;700;800&family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,800;1,9..144,600&family=Montserrat:ital,wght@0,500;0,600;0,700;0,800;1,500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Baloo+2:wght@500;700;800&family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,800;1,9..144,600&family=Montserrat:ital,wght@0,500;0,600;0,700;0,800;1,500&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Baloo+2:wght@500;700;800&family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,800;1,9..144,600&family=Montserrat:ital,wght@0,500;0,600;0,700;0,800;1,500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Baloo+2:wght@500;700;800&family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,800;1,9..144,600&family=Montserrat:ital,wght@0,500;0,600;0,700;0,800;1,500&display=swap">
 <style>
 :root{--ink:#2E2A26;--cream:#FBF3E4;--paper:#f3e6cc;--wood:#8C5A3C;--wood-d:#5E3A24;--leaf:#3E6B48;--leaf-d:#24432C;--paddy:#F2C14E;--red:#A8432F;--red-d:#6E2A1C;--gold:#d9b25c}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -198,9 +199,31 @@ img.flipx{transform:scaleX(-1)}
 #menu .grid button small{display:block;font-size:9px;color:#b8860b;letter-spacing:-1px;height:11px}
 #menu .x{float:right;border:none;background:none;font-size:28px;cursor:pointer;color:var(--wood-d);line-height:1}
 .end-card{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:6;width:600px}
+
+/* rotate prompt (phones in portrait) */
+#rot{position:fixed;inset:0;z-index:9999;display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:30px;text-align:center;background:radial-gradient(ellipse at 50% 40%,#7a5235 0%,#4a2f1d 60%,#2e1d12 100%);color:#f3e6cc;font-family:'Baloo 2',system-ui,sans-serif}
+#rot.on{display:flex}
+#rot .rscene{position:relative;width:230px;height:200px}
+#rot .bel{position:absolute;left:0;bottom:0;height:190px;filter:drop-shadow(0 0 2px #fbf3e4)}
+#rot .ph{position:absolute;right:18px;top:40px;width:62px;height:104px;border:6px solid #f3e6cc;border-radius:14px;background:linear-gradient(160deg,#d9b25c,#8C5A3C);box-shadow:0 8px 20px rgba(0,0,0,.4);animation:rotph 2.6s ease-in-out infinite}
+#rot .ph:after{content:'';position:absolute;left:50%;bottom:4px;width:14px;height:4px;margin-left:-7px;border-radius:3px;background:#f3e6cc}
+#rot .ar{position:absolute;right:-6px;top:6px;font-size:40px;color:#ffd970;animation:arw 2.6s ease-in-out infinite}
+@keyframes rotph{0%,20%{transform:rotate(0)}55%,85%{transform:rotate(-90deg)}100%{transform:rotate(0)}}
+@keyframes arw{0%,20%{opacity:0}35%,70%{opacity:1}100%{opacity:0}}
+#rot h2{margin:0;font-family:Fraunces,serif;font-weight:800;font-size:30px;line-height:1.15;color:#ffd970}
+#rot p{margin:0;font-size:17px;line-height:1.4;max-width:320px;opacity:.9}
+#rot button{border:none;background:var(--leaf);color:#fff;font:800 20px 'Baloo 2',sans-serif;padding:12px 26px;border-radius:18px;box-shadow:0 5px 0 var(--leaf-d);cursor:pointer}
+.fsbtn{position:absolute;right:18px;top:16px;z-index:3;border:2px solid rgba(240,220,174,.6);background:rgba(46,29,18,.55);color:#f0dcae;font:700 15px 'Baloo 2',sans-serif;border-radius:999px;padding:8px 16px;cursor:pointer;display:none}
 </style>
 </head>
 <body>
+<div id="rot" role="dialog" aria-label="Pusingkan telefon">
+  <div class="rscene"><img class="bel" src="a/img/belalang_menunjuk.webp" alt=""><div class="ph"></div><div class="ar">↻</div></div>
+  <h2>Pusingkan telefon<br>untuk mula membaca</h2>
+  <p>Buku cerita ini paling seronok dibaca dalam keadaan melintang.</p>
+  <button id="rotFs" style="display:none">⛶ Main skrin penuh</button>
+  <p style="font-size:14px;opacity:.75">Skrin tak berpusing? Matikan <b>Kunci Putaran 🔒</b> di telefon.</p>
+</div>
 <div id="fit"><div id="stage">
 
   <!-- LAGU -->
@@ -333,6 +356,7 @@ img.flipx{transform:scaleX(-1)}
       </div>
       <div class="ribbon"></div>
     </div>
+    <button class="fsbtn" id="bFs">⛶ Skrin penuh</button>
     <div id="load"><i id="loadBar"></i></div>
     <div class="hint">Sentuh buku untuk mula membaca</div>
   </div>
@@ -785,6 +809,18 @@ $('cover').onclick=e=>{if(e.target.id==='cover'||e.target.classList.contains('hi
 /* image preload with progress */
 (function(){const list=['bg_halaman_kampung','bg_rumah_usang','bg_kitab_terbuka','bg_dalam_rumah','bg_sawah','bg_tepi_sungai','belalang_menari','belalang_berdiri','belalang_berdiri_mulut_buka','belalang_melompat','belalang_menunjuk','belalang_berbisik','belalang_melambai','pakbelalang_berdiri','pakbelalang_menguap','pakbelalang_gelabah','pakbelalang_tersengih','tokketua_mengadu','ui_kitab_tertutup'];
   let n=0;list.forEach(f=>{const im=new Image();im.onload=im.onerror=()=>{n++;$('loadBar').style.width=(n/list.length*100)+'%';if(n===list.length)setTimeout(()=>$('load').style.opacity=0,400);};im.src=IMG(f);});})();
+
+/* ================= ORIENTATION ================= */
+const isPhone=()=>matchMedia('(pointer:coarse)').matches&&Math.min(screen.width,screen.height)<600;
+const canFs=!!(document.documentElement.requestFullscreen||document.documentElement.webkitRequestFullscreen)&&!/iPhone|iPad|iPod/.test(navigator.userAgent);
+async function goFull(){try{const el=document.documentElement;await (el.requestFullscreen?el.requestFullscreen({navigationUI:'hide'}):el.webkitRequestFullscreen());}catch(e){}
+  try{await screen.orientation.lock('landscape');}catch(e){}setTimeout(()=>{fit();checkRot();},400);}
+let rotOn=false;
+function checkRot(){const show=isPhone()&&innerHeight>innerWidth;if(show===rotOn)return;rotOn=show;$('rot').classList.toggle('on',show);
+  try{if(AC){if(show)AC.suspend();else AC.resume();}}catch(e){}}
+if(canFs&&matchMedia('(pointer:coarse)').matches){$('rotFs').style.display='inline-block';$('bFs').style.display='inline-block';}
+$('rotFs').onclick=()=>{unlock();goFull();};$('bFs').onclick=e=>{e.stopPropagation();goFull();};
+addEventListener('resize',checkRot);addEventListener('orientationchange',()=>setTimeout(()=>{fit();checkRot();},250));checkRot();
 </script>
 </body>
 </html>
